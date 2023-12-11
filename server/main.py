@@ -10,7 +10,7 @@ processor: Processing
 
 
 @app.route("/upload_archive", methods=["POST"])
-def upload():
+def upload_archive():
     try:
         global processor
         processor = Processing(request.files["archived_images"])
@@ -24,11 +24,6 @@ def upload():
 
         return jsonify({"success": False,
                         "message": "Ошибка при обработке запроса"}), 500
-
-
-def background_processing() -> None:
-    global processor
-    processor.process_images_in_archive()
 
 
 @app.route("/check_status", methods=["GET"])
@@ -51,5 +46,10 @@ def download_processed_archive():
         return jsonify({"error": "Архив еще не обработан"}), 404
 
 
+def background_processing() -> None:
+    global processor
+    processor.process_images_in_archive()
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
