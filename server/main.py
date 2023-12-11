@@ -34,7 +34,7 @@ def background_processing() -> None:
 @app.route("/check_status", methods=["GET"])
 def check_status():
     global processor
-    return jsonify({"is_processing_done": processor.is_processing_done})
+    return jsonify({"is_processing_done": None if processor is None else processor.is_processing_done})
 
 
 @app.route("/download_processed_archive", methods=["GET"])
