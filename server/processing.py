@@ -17,9 +17,10 @@ class Processing:
     __archive_file = None
     __upload_directory = os.path.join(os.path.dirname(os.path.abspath(__file__)), __UPLOAD_DIRECTORY)
 
-    def __init__(self, archive_file: FileStorage):
+    def __init__(self, archive_file: FileStorage, upload_directory: str = None):
         self.__is_processing_done = False
         self.__archive_file = archive_file
+        self.__upload_directory = self.__upload_directory if upload_directory is None else upload_directory
 
     @property
     def is_processing_done(self):
@@ -33,20 +34,22 @@ class Processing:
         if not os.path.exists(self.__upload_directory):
             os.makedirs(self.__upload_directory)
 
-        self.__extract_to_path = os.path.join(self.__upload_directory, str(int(time.time())))
+        self.__extract_to_path = os.path.join(self.__upload_directory, str(int(time.time_ns())))
         os.makedirs(self.__extract_to_path)
         self.__delete_excess_dirs(self.__upload_directory)
 
-        archive_file_path = os.path.join(self.__extract_to_path, self.__archive_file.filename)
-        self.__archive_file.save(archive_file_path)
+        temp_archive_file_path = os.path.join(self.__extract_to_path, self.__archive_file.filename)
+        self.__archive_file.save(temp_archive_file_path)
         self.__archive_file.close()
 
-        patoolib.extract_archive(archive_file_path, outdir=self.__extract_to_path)
-        os.remove(archive_file_path)
+        patoolib.extract_archive(temp_archive_file_path, outdir=self.__extract_to_path)
+        os.remove(temp_archive_file_path)
 
     def process_images_in_archive(self) -> None:
         # имитация обработки изображений
-        sleep_time = random.randint(2, 5)
+        min_sleep_time = 2
+        max_sleep_time = 5
+        sleep_time = random.uniform(min_sleep_time, max_sleep_time)
         time.sleep(sleep_time)
         self.__is_processing_done = True
 

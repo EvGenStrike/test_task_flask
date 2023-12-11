@@ -31,11 +31,12 @@ class ClientApp:
             files = {"archived_images": archive}
             try:
                 response = requests.post(f"{self.__server_url}/upload_archive", files=files)
+                answer = response.json()
             except (ConnectionRefusedError, requests.exceptions.ConnectionError) as error:
-                return {"success": False, "message": "Ошибка доступа сервера. Попробуйте позже"}
+                answer = {"success": False, "message": f"Ошибка доступа сервера {error}. Попробуйте позже"}
 
         os.remove(archive_path)
-        return response.json()
+        return answer
 
     def __download_processed_archive(self) -> None:
         response = requests.get(f"{self.__server_url}/download_processed_archive")
@@ -44,7 +45,7 @@ class ClientApp:
             os.makedirs(self.__download_to_path)
         if response.status_code == 200:
             content_disposition = response.headers.get("Content-Disposition")
-            filename = f"{str(int(time.time()))}.zip"
+            filename = f"{str(int(time.time_ns()))}.zip"
             if content_disposition and "filename=" in content_disposition:
                 filename = content_disposition.split("filename=")[1].strip('"')
             else:
@@ -56,8 +57,8 @@ class ClientApp:
         else:
             print(f"Ошибка при скачивании архива: {response.status_code} - {response.text}")
 
-    def __check_document_status(self, server_url: str) -> dict:
-        response = requests.get(f"{server_url}/check_status")
+    def __check_document_status(self) -> dict:
+        response = requests.get(f"{self.__server_url}/check_status")
         return response.json()
 
     def __input_image_folder_path(self) -> str:
@@ -68,7 +69,7 @@ class ClientApp:
     def __ping_server_is_processing_done(self) -> bool:
         while True:
             print("Проверка готовности обработки изображений...")
-            status = self.__check_document_status(self.__server_url)
+            status = self.__check_document_status()
             if not status["is_processing_done"]:
                 print(f"Изображения ещё обрабатываются. Повторная проверка через {self.__ping_frequency} сек...")
                 time.sleep(self.__ping_frequency)
