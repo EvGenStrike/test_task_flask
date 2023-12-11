@@ -10,7 +10,6 @@ def archive_images(images_folder_path: str) -> str:
     images = [os.path.join(images_folder_path, file_name) for file_name in os.listdir(images_folder_path)
               if is_valid_file(file_name)]
     archive_name = get_archive_name(images_folder_path)
-    project_root = os.path.dirname(os.path.dirname(__file__))
     full_archive_file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), archive_name)
     with ZipFile(full_archive_file_path, "w") as archive:
         for image in images:
