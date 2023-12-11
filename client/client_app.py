@@ -23,6 +23,7 @@ class ClientApp:
         if not result["success"]:
             return
         if self.__ping_server_is_processing_done():
+            print("Изображения успешно обработаны. Скачивание результата...")
             self.__download_processed_archive()
 
     def __upload_images(self, images_folder_path: str) -> dict:
@@ -73,6 +74,4 @@ class ClientApp:
             if not status["is_processing_done"]:
                 print(f"Изображения ещё обрабатываются. Повторная проверка через {self.__ping_frequency} сек...")
                 time.sleep(self.__ping_frequency)
-            else:
-                print("Изображения успешно обработаны. Скачивание результата...")
-                return True
+            return True
