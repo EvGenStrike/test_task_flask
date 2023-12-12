@@ -74,4 +74,5 @@ class ClientApp:
             if not status["is_processing_done"]:
                 print(f"Изображения ещё обрабатываются. Повторная проверка через {self.__ping_frequency} сек...")
                 time.sleep(self.__ping_frequency)
-            return True
+            else:
+                return True
